@@ -1,0 +1,9 @@
+{
+    "execMap": {
+        "py": "standard_issue/winpython/python-2.7.13.amd64/python.exe"
+    },
+    "watch": [
+        "standard_issue"
+    ],
+    "delay":1000
+}
