@@ -1,0 +1,1 @@
+"c:\Program Files\Git\bin\sh.exe" --login -i -c "/c/Users/loves/programming/humanInterface/dragonfly/loader.sh"
