@@ -13,8 +13,11 @@ Joy1::
     Click Up
     ; RegularMouseUp()
     return
-Joy2::FreezeMouse()
-Joy2 Up:: FreezeMouseOff()
+Joy2::
+    FreezeMouse()
+    KeyWait Joy2
+    FreezeMouseOff()
+    return
 Joy3::
     MouseClick, Right
     ; Send, {Space Down}

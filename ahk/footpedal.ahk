@@ -28,4 +28,3 @@ mode:="click"
 #If
 
 
-^!r::Reload  ; Assign Ctrl-Alt-R as a hotkey to restart the script.

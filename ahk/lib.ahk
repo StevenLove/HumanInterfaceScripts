@@ -21,9 +21,11 @@ Doubleclick(){
 	return
 }
 FreezeMouse(){
+    ; SetGlobal("stickSpeedMultiplier",0)
     BlockInput, MouseMove
 }
 FreezeMouseOff(){
+    ; SetGlobal("stickSpeedMultiplier",1)
     BlockInput, MouseMoveOff
 }
 FreezeMouseDown(){
@@ -65,3 +67,6 @@ global freezeMouseActive
     Click up
     return
 }
+
+; ^!r::Reload  ; Assign Ctrl-Alt-R as a hotkey to restart the script.
+; this seems to break xbox sticks...
