@@ -78,15 +78,16 @@ def load_sleep_wake_grammar(initial_awake):
 
     class SleepRule(MappingRule):
         mapping = {
-            "wake up":  Function(wake) + Function(lambda: get_engine().start_saving_adaptation_state()),
-            "go to sleep":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+            "listen to me":  Function(wake) + Function(lambda: get_engine().start_saving_adaptation_state()),
+            "(go to sleep)|(stop listening)":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+            
             # "halt listening":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
         }
     sleep_grammar.add_rule(SleepRule())
 
     sleep_noise_rule = MappingRule(
         name = "sleep_noise_rule",
-        mapping = { "<text>": Function(lambda text: False and print(text)) },
+        mapping = { "<text>": Function(lambda text: False and print("(asleep) " + text)) },
         extras = [ Dictation("text") ],
         context = FuncContext(lambda: sleeping),
     )

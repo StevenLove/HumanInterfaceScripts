@@ -9,6 +9,7 @@ Licensed under the LGPL, see http://www.gnu.org/licenses/
 from time import sleep
 from dragonfly import (
     Alternative, AppContext,
+    BringApp,
     Choice, CompoundRule, Config, Dictation,
     FocusWindow, Function, Grammar,
     Integer, IntegerRef, Item, Key,
@@ -17,6 +18,7 @@ from dragonfly import (
     Section, Text, Window,
     get_engine
 )
+import lib.mappings
 
 import win32con
 
@@ -55,49 +57,50 @@ release = Key("shift:up, ctrl:up, alt:up, win:up")
 
 ################################################################################
 ## Disabling dictation mode
+## actually this is handled in kaldi_module_loader_plus.py
+## but maybe we can do something similar for setting up modes
 dictation_enabled = True
 
 def noop(text=None):
     print "noop"
     pass
 
-def dictation_off():
-    global dictation_enabled
-    if dictation_enabled:
-        print "Dictation now OFF."
-        dictation_enabled = False
-        grammar.disable()
-        # dictationOffGrammar.enable()
-        # disableDictation()
-    else:
-        print "Dictation already off."
+# def dictation_off():
+#     global dictation_enabled
+#     if dictation_enabled:
+#         print "Dictation now OFF."
+#         dictation_enabled = False
+#         grammar.disable()
+#         # dictationOffGrammar.enable()
+#         # disableDictation()
+#     else:
+#         print "Dictation already off." 
+# def dictation_on():
+#     global dictation_enabled
+#     if not dictation_enabled:
+#         print "Dictation now ON."
+#         dictation_enabled = True
+#         grammar.enable()
+#         # dictationOffGrammar.disable()
+#         # enableDictation()
+#     else:
+#         print "Dictation already on."
 
-def dictation_on():
-    global dictation_enabled
-    if not dictation_enabled:
-        print "Dictation now ON."
-        dictation_enabled = True
-        grammar.enable()
-        # dictationOffGrammar.disable()
-        # enableDictation()
-    else:
-        print "Dictation already on."
+# class DictationOffRule(MappingRule):
+#     mapping = {
+#         # "dictation off | go to sleep": Function(dictation_off),
+#         # "dictation on | wake up": Function(dictation_on),
+#         "<text>": Function(noop),
+#     }
+#     extras = [
+#         Dictation("text"),
+#     ]
+#     defaults = {
+#     }
 
-class DictationOffRule(MappingRule):
-    mapping = {
-        "dictation off | go to sleep": Function(dictation_off),
-        "dictation on | wake up": Function(dictation_on),
-        "<text>": Function(noop),
-    }
-    extras = [
-        Dictation("text"),
-    ]
-    defaults = {
-    }
-
-dictationOffGrammar = Grammar("Dictation off")
-dictationOffGrammar.add_rule(DictationOffRule())
-dictationOffGrammar.load()
+# dictationOffGrammar = Grammar("Dictation off")
+# dictationOffGrammar.add_rule(DictationOffRule())
+# dictationOffGrammar.load()
 # dictationOffGrammar.disable()
 
 
@@ -399,7 +402,7 @@ grammarCfg.cmd.map = Item(
         # Microphone sleep/cancel started dictation.
         "[<text>] (go to sleep|cancel and sleep) [<text2>]": Function(cancel_and_sleep),  # @IgnorePep8
 
-        # Ego  
+        # Ego
         "alpha": Text("a"),
         "bravo": Text("b"),
         "charlie": Text("c"),
@@ -550,10 +553,97 @@ class RepeatRule(CompoundRule):
             for action in sequence:
                 action.execute()
         release.execute()
+ 
+class KeysOnlyRule(MappingRule):
+    exported = False
+    mapping = {k:Key(v) for k,v in lib.mappings.keys.items()}
+    mapping.update({"<formatType> <text>": Function(format_text)})
+    # mapping.update({"sh":Mouse("<0,0>,left")})
+    extras = [
+        Dictation("text"),
+        Choice("formatType", formatMap),
+        IntegerRef("n", 1, 100),  # Times to repeat the sequence.
+    ]
+    defaults = {
+        "n":1,
+    }
+
+class LiteralRule(MappingRule):
+    exported = False
+    mapping = {
+        # "paste":Text("paste!"),
+        "<text>": Text("%(text)s"),
+    }
+    extras = [
+        Dictation("text"),
+    ]
+    defaults = {
+    }
+
+class SayRule(MappingRule):
+    exported = False
+    mapping = {k:Key(v) for k,v in lib.mappings.sayablePunctuation.items()}
+    mapping.update({"<text>":Text("%(text)s")})
+    extras=[
+        Dictation("text"),
+    ]
+    defaults = {}
+
+class NumberRule(MappingRule):
+    exported = False
+    mapping = {k:Key(v) for k,v in lib.mappings.digits.items()}
+    extras=[
+    ]
+    defaults = {}
+
+def bringDynamic(text):
+    print text
+    BringApp(text+"").execute()
+
+class BringMeRule(MappingRule):
+    exported = False
+    mapping = {}
+    mapping.update({"<text>":Function( lambda text: bringDynamic(text) )})
+    extras=[
+        Dictation("text"),
+    ]
+    defaults = {}
+    
+def makePrefixedCompoundRule(prefix,mappingRule):
+    alts = []
+    alts.append(RuleRef(rule=mappingRule()))
+    singleAction = Alternative(alts)
+    seq = Repetition(singleAction, min=1, max=16, name="mySequence")
+    class PrefixCompoundRule(CompoundRule):
+        spec = prefix+" <mySequence>"
+        extras = [
+            seq
+        ]
+        defaults = {
+        }
+        def _process_recognition(self, node, extras):
+            sequence = extras["mySequence"]
+            for action in sequence:
+                action.execute()
+            release.execute()
+    dynamicName = "Prefix"+prefix+"Rule"
+    PrefixCompoundRule.__name__ = dynamicName
+    PrefixCompoundRule.__qualname__ = dynamicName
+    return PrefixCompoundRule
+###############################################################
+PrefixKeyRule = makePrefixedCompoundRule("",KeysOnlyRule)
+PrefixLiteralRule = makePrefixedCompoundRule("literal",LiteralRule)
+PrefixSayRule = makePrefixedCompoundRule("say",SayRule)
+PrefixBringRule = makePrefixedCompoundRule("switch to",BringMeRule)
+PrefixNumberRule = makePrefixedCompoundRule("number",NumberRule)
 
 grammar = Grammar("Generic edit")
-grammar.add_rule(RepeatRule())  # Add the top-level rule.
-grammar.load()  # Loadf the grammar.
+grammar.add_rule(PrefixKeyRule())  # Add the top-level rule.
+grammar.add_rule(PrefixLiteralRule())
+grammar.add_rule(PrefixSayRule())
+grammar.add_rule(PrefixBringRule())
+
+grammar.load()  # Load the grammar.
 
 def unload():
     """Unload function which will be called at unload time."""
@@ -568,3 +658,5 @@ def unload():
 #     grammar.disable()
 # def enableDictation():
 #     grammar.enable()
+
+
