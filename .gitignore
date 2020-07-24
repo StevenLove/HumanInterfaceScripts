@@ -1,3 +1,4 @@
 dragonfly/standard_issue/*
 !dragonfly/standard_issue/_*.py
 caster/
+!caster/Caster-master/castervoice/kaldi_module_loader_plus.py

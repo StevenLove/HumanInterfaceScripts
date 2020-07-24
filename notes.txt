@@ -1,0 +1,50 @@
+ideal grammar
+
+
+Do I want to lock in modes...
+persistant through multiple utterances?
+through the rest of this utterance?
+or affecting just one command?
+
+
+i like the word 'say' instead of literal
+i do want a more powerful way to insist that what i'm saying is english text
+maybe 'say' can include punctuation and such.
+
+the prefix 'keys' is far too cumbersome. Maybe keys should be the default mode
+
+how about....
+a list of modes
+saying the mode name applies that mode for the rest of the utterance
+saying 'lock'+mode name keeps you there until you lock into another mode or unlock
+when in no mode, it checks everything?
+
+let's get formats working
+
+is it possible for me to change the length of time of silence before an utterance ends?
+because when I have a command like "say peter prefers dictation to typing, and especially he prefers it to pen and paper"
+that often when I pause for the comma, the utterance ends and I'm no longer in 'say' modes
+
+
+
+
+
+
+
+known verbal conflicts
+
+sit - say
+rang - right
+space - paste
+alt - odd
+*any noise like typing* - urge, up
+
+"say they said i'll bet" - ??? doesn't work
+"literal highlights the current word" - ??? doesn't work
+"say restart bluetooth" - ??? doesn't work
+
+
+
+7/23/2020 - adding sleep/wake to caster - add the following 2 lines to Caster-Master/_caster.py 
+from castervoice.kaldi_module_loader_plus import load_sleep_wake_grammar
+load_sleep_wake_grammar(True)
