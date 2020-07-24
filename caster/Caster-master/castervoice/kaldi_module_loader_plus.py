@@ -41,6 +41,59 @@ else:
     setup_log()
 
 
+
+
+
+def load_eye_control():
+    eye_grammar = Grammar("eyeControl")
+
+    # def sleep(force=False):
+    #     global sleeping
+    #     if not sleeping or force:
+    #         sleeping = True
+    #         sleep_grammar.set_exclusiveness(True)
+    #     notify('sleep')
+
+    # def wake(force=False):
+    #     global sleeping
+    #     if sleeping or force:
+    #         sleeping = False
+    #         sleep_grammar.set_exclusiveness(False)
+    #     notify('wake')
+
+    class EyeControlRule(MappingRule):
+        mapping = {
+            "caster please enable eye control":  BringApp('Precision Gaze Mouse'),
+            "caster please disable eye control":   BringApp('Precision Gaze Mouse')
+            
+            # "halt listening":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+        }
+    eye_grammar.add_rule(EyeControlRule())
+
+    # sleep_noise_rule = MappingRule(
+    #     name = "sleep_noise_rule",
+    #     mapping = { "<text>": Function(lambda text: False and print("(asleep) " + text)) },
+    #     extras = [ Dictation("text") ],
+    #     context = FuncContext(lambda: sleeping),
+    # )
+    # sleep_grammar.add_rule(sleep_noise_rule)
+
+    eye_grammar.load()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # --------------------------------------------------------------------------
 # User notification / rudimentary UI. MODIFY AS DESIRED
 
@@ -78,8 +131,8 @@ def load_sleep_wake_grammar(initial_awake):
 
     class SleepRule(MappingRule):
         mapping = {
-            "caster (please listen to me)|(wake up)":  Function(wake) + Function(lambda: get_engine().start_saving_adaptation_state()),
-            "(go to sleep)|(stop listening)":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+            "caster please (listen to me)|(wake up)":  Function(wake) + Function(lambda: get_engine().start_saving_adaptation_state()),
+            "caster please (go to sleep)|(stop listening)":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
             
             # "halt listening":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
         }
