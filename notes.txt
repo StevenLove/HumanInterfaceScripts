@@ -48,3 +48,14 @@ alt - odd
 7/23/2020 - adding sleep/wake to caster - add the following 2 lines to Caster-Master/_caster.py 
 from castervoice.kaldi_module_loader_plus import load_sleep_wake_grammar
 load_sleep_wake_grammar(True)
+
+the toby eye tracker in the track i r infrared sensor both arrived in the mail and i've been trying them out
+i may just be fine with enable viacam instead of the track ir. 
+i'm not super happy about having to use only one monitor mainly. 
+
+I'm using Precision Gaze Mouse to combine head tracking and eye tracking for mouse movement
+I actually like leaving the head tracking movement on and turning the eye tracking on or off
+For instance, in MTGA I can't read a card and hover over it at the same time
+However with PGM I can't do this if I use the TrackIR
+
+the only drawback to using eviacam is that it occupies my webcam.

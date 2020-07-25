@@ -21,6 +21,7 @@ import sys
 
 import six
 
+from dragonfly import BringApp, WaitWindow, Key, RunCommand, FocusWindow, Mimic
 from dragonfly import get_engine
 from dragonfly import Grammar, MappingRule, Function, Dictation, FuncContext
 from dragonfly.loader import CommandModuleDirectory
@@ -42,56 +43,37 @@ else:
 
 
 
+def load_custom_keys():
+    grammar = Grammar("customKeys")
+    class CustomKeysRule(MappingRule):
+        mapping = {
+            "windows": Key('win:down/3, win:up/3'),
+            "caster reboot": Mimic("reboot caster")
+        }
+    grammar.add_rule(CustomKeysRule())
+    grammar.load()
 
+def closeProgram(name):
+    (FocusWindow(title=name) + WaitWindow(title=name) + Key('a-f4')).execute()
 
 def load_eye_control():
     eye_grammar = Grammar("eyeControl")
 
-    # def sleep(force=False):
-    #     global sleeping
-    #     if not sleeping or force:
-    #         sleeping = True
-    #         sleep_grammar.set_exclusiveness(True)
-    #     notify('sleep')
+    def startTrackingPrograms():
+        BringApp(r'C:\Users\loves\programming\humanInterface\openeViacam.bat').execute()
+        BringApp(r'C:\Users\loves\programming\humanInterface\openPrecisionGazeMouse.bat').execute()
 
-    # def wake(force=False):
-    #     global sleeping
-    #     if sleeping or force:
-    #         sleeping = False
-    #         sleep_grammar.set_exclusiveness(False)
-    #     notify('wake')
-
+    def stopTrackingPrograms():
+        closeProgram("Precision Gaze Mouse")
+        closeProgram("Enable Viacam")
     class EyeControlRule(MappingRule):
         mapping = {
-            "caster please enable eye control":  BringApp('Precision Gaze Mouse'),
-            "caster please disable eye control":   BringApp('Precision Gaze Mouse')
-            
-            # "halt listening":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+            "caster please toggle eye tracking": Key('f10') + Key('f11'),
+            # "caster please enable eye control": Key('f10'),
+            # "caster please disable eye control":   Function(stopTrackingPrograms)
         }
     eye_grammar.add_rule(EyeControlRule())
-
-    # sleep_noise_rule = MappingRule(
-    #     name = "sleep_noise_rule",
-    #     mapping = { "<text>": Function(lambda text: False and print("(asleep) " + text)) },
-    #     extras = [ Dictation("text") ],
-    #     context = FuncContext(lambda: sleeping),
-    # )
-    # sleep_grammar.add_rule(sleep_noise_rule)
-
     eye_grammar.load()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # --------------------------------------------------------------------------
@@ -156,6 +138,12 @@ def load_sleep_wake_grammar(initial_awake):
 
 # --------------------------------------------------------------------------
 # Main event driving loop.
+def load_custom_grammars():
+    load_eye_control()
+    load_sleep_wake_grammar(True)
+    load_custom_keys()
+
+
 
 def main():
     logging.basicConfig(level=logging.INFO)

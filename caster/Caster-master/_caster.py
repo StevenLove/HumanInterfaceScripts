@@ -10,9 +10,8 @@ if six.PY2:
     logging.basicConfig()
 
 # ADDED BY STEVEN #
-from castervoice.kaldi_module_loader_plus import load_sleep_wake_grammar, load_eye_control
-load_sleep_wake_grammar(True)
-load_eye_control()
+from castervoice.kaldi_module_loader_plus import load_custom_grammars
+load_custom_grammars()
 ###################
 
 from castervoice.lib.ctrl.dependencies import DependencyMan  # requires nothing
