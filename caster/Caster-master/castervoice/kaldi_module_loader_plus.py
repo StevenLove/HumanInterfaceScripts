@@ -18,10 +18,11 @@ from __future__ import print_function
 import logging
 import os.path
 import sys
-
+import threading
 import six
 
-from dragonfly import BringApp, WaitWindow, Key, RunCommand, FocusWindow, Mimic
+from dragonfly import BringApp, WaitWindow, Key, FocusWindow, Mimic, PlaySound, Mouse, Choice
+from configparser import ConfigParser
 from dragonfly import get_engine
 from dragonfly import Grammar, MappingRule, Function, Dictation, FuncContext
 from dragonfly.loader import CommandModuleDirectory
@@ -30,6 +31,13 @@ from dragonfly.log import setup_log
 
 # --------------------------------------------------------------------------
 # Set up basic logging.
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
 
 if False:
     # Debugging logging for reporting trouble
@@ -41,15 +49,51 @@ if False:
 else:
     setup_log()
 
+def noop():
+    #noop
+    pass
 
+def readIni(propName):
+    iniURL = r"C:\Users\loves\programming\humanInterface\ahk\inis\globals.ini"
+    confparser = ConfigParser()
+    confparser.read(iniURL)
+    return confparser.get('globals', propName)
+
+def writeIni(propName,propValue):
+    iniURL = r"C:\Users\loves\programming\humanInterface\ahk\inis\globals.ini"
+    confparser = ConfigParser()
+    confparser.read(iniURL)
+    confparser['globals'][propName] = propValue
+    with open(iniURL, 'w') as configfile:
+        confparser.write(configfile)
+
+def setFootPedalMode(footPedalMode="click"):
+    writeIni("footMode",footPedalMode)
+
+def setControllerMode(onOff="on"):
+    writeIni("controllerMode",onOff)
 
 def load_custom_keys():
+    foot_pedal_modes = {
+        "scroll":"scroll",
+        "click":"click"
+    }
     grammar = Grammar("customKeys")
     class CustomKeysRule(MappingRule):
         mapping = {
             "windows": Key('win:down/3, win:up/3'),
-            "caster reboot": Mimic("reboot caster")
+            "caster reboot": Mimic("reboot caster"),
+            "magic":Mouse("left:down/3, left:up/3"),
+            "space bar":Key("space:down/3, space:up/3"),
+            "foot pedal <footPedalMode>":Function(setFootPedalMode),
+            "ecks box controller <onOff>":Function(setControllerMode),
+            "look":Key("f15")
+            # "foot pedal mouse":Function(lambda:writeIni("footMode","mouse"))
         }
+        extras = [
+            Choice("footPedalMode",foot_pedal_modes),
+            Choice("onOff",{"on":"on","off":"off"})
+        ]
     grammar.add_rule(CustomKeysRule())
     grammar.load()
 
@@ -82,10 +126,14 @@ def load_eye_control():
 # For message in ('sleep', 'wake')
 def notify(message):
     if message == 'sleep':
+        PlaySound(r"C:\Windows\Media\Speech Off.wav").execute()
+
         print("Sleeping...")
         # get_engine().speak("Sleeping")
     elif message == 'wake':
         print("Awake...")
+        PlaySound(r"C:\Windows\Media\Speech On.wav").execute()
+
         # get_engine().speak("Awake")
 
 
@@ -96,27 +144,35 @@ sleeping = False
 
 def load_sleep_wake_grammar(initial_awake):
     sleep_grammar = Grammar("sleep")
-
     def sleep(force=False):
+        get_engine().stop_saving_adaptation_state()
         global sleeping
         if not sleeping or force:
             sleeping = True
             sleep_grammar.set_exclusiveness(True)
-        notify('sleep')
+            notify('sleep')
 
     def wake(force=False):
+        get_engine().start_saving_adaptation_state()
         global sleeping
         if sleeping or force:
             sleeping = False
             sleep_grammar.set_exclusiveness(False)
-        notify('wake')
+            notify('wake')
 
     class SleepRule(MappingRule):
         mapping = {
-            "caster please (listen to me)|(wake up)":  Function(wake) + Function(lambda: get_engine().start_saving_adaptation_state()),
-            "caster please (go to sleep)|(stop listening)":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
-            
-            # "halt listening":   Function(lambda: get_engine().stop_saving_adaptation_state()) + Function(sleep),
+            "go to sleep":Function(sleep),
+            "bake up": Function(noop),
+            "rake up":Function(noop),
+            "shake up":Function(noop),
+            "lake up":Function(noop),
+            "nake up":Function(noop),
+            "wake tup":Function(noop),
+            "wake sup":Function(noop),
+            "whey grub":Function(noop),
+            "wake":Function(noop),
+            "wake up":Function(wake),
         }
     sleep_grammar.add_rule(SleepRule())
 
@@ -129,6 +185,23 @@ def load_sleep_wake_grammar(initial_awake):
     sleep_grammar.add_rule(sleep_noise_rule)
 
     sleep_grammar.load()
+
+    # def checkIniFile():
+    #     global sleeping
+    #     global sleepOverride
+    #     voice = readIni('voice')
+    #     new_value = (voice=="off")
+    #     if new_value:
+    #         sleep()
+    #     else:
+    #         wake()
+            
+    # set_interval(checkIniFile,3)
+    # watchingIniFile = True
+        
+    
+
+
 
     if initial_awake:
         wake(force=True)

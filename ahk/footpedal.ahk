@@ -8,23 +8,27 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 global mode
 
 mode:="click"
-; UpdateMode(){
-;     global mode
-;     mode := GetGlobal("footMode")
-; }
+UpdateMode(){
+    global mode
+    mode := GetGlobal("footMode")
+}
 
-; SetTimer, UpdateMode, 100
+SetTimer, UpdateMode, 500
 
-!+s::mode:="scroll"
-!+c::mode:="click"
+; !+s::mode:="scroll"
+; !+c::mode:="click"
 
 #If mode == "scroll"
-    $F21:: Send, {WheelDown}
-    $F22:: Send, {WheelUp}
+    $F14:: Send, {WheelUp}
+    $F15:: Send, {WheelDown}
 #If mode == "click"
-    $F21:: FreezeMouseDown()
-    $F21 Up:: FreezeMouseUp()
-    $F22:: MouseClick, Right
+    $F14:: FreezeMouseDown()
+    $F14 Up:: FreezeMouseUp()
+; F15:: handled by FreePIE to jump cursor to my gaze
+
+; $F22:: MouseClick, Right
+; $F22:: CenterMouse()
+; $F15:: Send, {F15}
 #If
 
 

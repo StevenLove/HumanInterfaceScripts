@@ -26,9 +26,10 @@ DetectHiddenWindows, On
 Files := [	; Additional Startup Files and Folders Can Be Added Between the ( Continuations  ) Below
 (Join, 
 "footpedal.ahk",
-"xbox dpad.ahk",
 "xboxbuttons.ahk",
-"xboxsticks.ahk"
+"xboxsticks.ahk",
+"voiceAndEyes.ahk",
+"mouseKeyboardModes.ahk"
 )]
 ;}
 

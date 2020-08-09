@@ -20,6 +20,11 @@ Doubleclick(){
 	MouseClick, left
 	return
 }
+CloseWindow(name){
+    if WinExist(name)
+        WinClose ; use the window found above
+}
+
 FreezeMouse(){
     ; SetGlobal("stickSpeedMultiplier",0)
     BlockInput, MouseMove
@@ -67,6 +72,28 @@ global freezeMouseActive
     Click up
     return
 }
+CenterMouse(){
+    ; x := (A_ScreenWidth // 2)
+    ; y := (A_ScreenHeight // 2)
+    ; ToolTip "X %x% y %y%"
+    ; mousemove, x, y
+    CoordMode, Mouse, Screen
+    MouseMove, (A_ScreenWidth // 2), (A_ScreenHeight // 2)
+}
+ClearTooltips(){
+    ToolTip
+}
+StartScript(path){
+    Run,%path%
+}
+EndScript(path){
+    DetectHiddenWindows,on
+    SetTitleMatchMode,2
+    WinKill,%path%
+}
+
+
+SetTimer, ClearTooltips, 8000
 
 ; ^!r::Reload  ; Assign Ctrl-Alt-R as a hotkey to restart the script.
-; this seems to break xbox sticks...
+; this seems to break xbox sticks...-

@@ -1,4 +1,4 @@
-ideal grammar
+[ideal grammar
 
 
 Do I want to lock in modes...
@@ -59,3 +59,87 @@ For instance, in MTGA I can't read a card and hover over it at the same time
 However with PGM I can't do this if I use the TrackIR
 
 the only drawback to using eviacam is that it occupies my webcam.
+
+7/25
+I created a .bat file that runs caster as an administrator. Not sure why the one provided doesn't work but I use
+chdir "C:\Users\loves\programming\humanInterface\caster\Caster-master"
+instead of 
+set currentpath=%~dp0
+
+i've made some great progress here. Adding "windows" as a key-word has been great!
+And getting caster to run as administrator has been important so that i can control enable viacom and precision gaze Mouse
+
+i really enjoy not having to wear a hat and just being able to sit down
+
+It would be nice to be able to alternately use the precision gaze mouse modes where you use f three in order to move the mouse versus using f10 to alternately pause and unpause
+I also want to be able to click in magic without having to say "squat" and "bench"
+
+it would be cool if i could save the Location Of My Mouse And Restore It Later
+
+i would also like to be able to change the volume with my voice
+
+i keep running into issues where when i turned the volume up then its voice recognized
+especially with the mouse grids
+
+i think having caster on a switch would really help
+
+it looks like the right mouse button can be held down preventing left click fro m behaving as expected
+
+7/26
+
+I may need to use task scheduler instead of the startup folder to get my caster admin .bat to run.  may be only exes in the startup folder get run
+
+I got it setup so that the INI file from autohotkeys contains a 'voice' paramater controlled by numpad enter and delete keys that dragonfly checks every 3 seconds to see if it should
+turn on or off. This helps since the 'go to sleep' control by voice would always hear the wake up command from an arbitrary youtube video. Even when the command was 'caster please listen to me'
+
+i've made some improvements to the camera that e via cam uses. I've disabled some automatic lighting things and also zoomed in
+
+I also got my ring light stand with phone attachment so i should be able to stream now
+
+I think it would be a great idea to be able to say a word and then to move my head to scroll, like squat and bench.
+https://dusty.phillips.codes/2020/02/15/on-voice-coding/
+
+I still need to find out how to say things literally. I couldn't get it to print 'squat' and 'bench' as written above. I had to type it out...
+I tried 'enable text manipulation' as described on dusty phillips' site, but now caster is broken entirely.
+
+7/27
+I did another round of optimizing the eviacam camera and I think I'm quite satisfied. I set the exposure manually for 30fps and zoomed in so that my face takes up 1/3 the width of the display
+
+7/28
+should i look into optical character recognition?
+Should i get a better foot pedal?
+It may be the different lighting conditions throughout the day impact e via cam a lot
+I'd like an easy input to jump to my gaze, and also to be able to toggle that on so that my mouse goes exactly where my gaze is constantly, unlike the circle approach
+I do so much looking around.... It's terrible playing magic, but probably depends entirely on the task at hand. I probably need more experience programming
+It seems like some times the screen flashes white and the camera loses track of my face
+
+https://www.youtube.com/watch?v=fg6Q3r2p_yE the dictation from dragon feels so good.... It could be nice to be able to switch between them for free dictation vs Commands
+again, it may be that I need more experience coding... Also he does say that coding is still 80% typing. I can see a world where this is tolerable for me. I just definitely can't be using the mouse with the keyboard.
+
+Can I modify precisiongazemouse to allow me to use trackIR?? r
+
+7/29
+
+desired modifications to PGM
+allow myself to move the mouse outside of the one monitor - know how to do (https://github.com/PrecisionGazeMouse/PrecisionGazeMouse/blob/master/PrecisionGazeMouse/MouseController.cs line 359)
+less smoothing?
+able to turn on/off the eye tracking part
+when I look somewhere, move the cursor there. As it stands, it maintains some delta, but not exactly...
+
+I'm actually kind of good with typing like normal augmented with voice commands and stuff
+would like to add voice commands for centering the mouse. I also may use trackIR after all. I started using freePIE and it's very responsive. Hopefully a little more reliable than smyle mouse and eviacam. I'd prefer not wearing the hat but it's better than the thing cutting out.
+i'd also like to set up some long press commands on the foot pedal. And probably get a different one than the current one.
+strange that the freePIE mouse goes upwards when I go to the left to my other screen...
+and a voice command or foot pedal to jump cursor to my gaze
+looks like PGM pauses itself when it notices my mouse move. I want to be able to use the F3 mode to move to my gaze when I choose...
+
+
+7/31
+Adding false decoy keywords like "shake up" to my sleep wake commands has increased accuracy tremendously. I no longer need to use the keyboard to toggle my speech on and off.
+I am also enjoying using track iR now that i use free pie. It is sad that i need to use a hat now but i don't need to worry about the lighting in my room quite so much.
+With free pie i'm able to do everything that i wanted to change about precision gaze mouse.
+I still have the strange issue where the mouse goes off when i look far to the side but it's less of an issue because i mostly looking by using my eyes
+Unfortunately, I Guess, This Is the more expensive of my possible options. Although i'm glad i'm not using smile mouse at one hundred dollars per year
+
+
+
